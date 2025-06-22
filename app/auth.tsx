@@ -1,21 +1,91 @@
 import { Ionicons } from "@expo/vector-icons";
 import Ionicos from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useState } from "react";
+import * as LocalAuthentication from "expo-local-authentication";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import {
-    Dimensions,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 const { width } = Dimensions.get("window");
 
 export default function AuthScreen() {
-  const [hasBiometrics, setHadBiometrics] = useState(false);
+  const [hasBiometrics, setHasBiometrics] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    checkBiometrics();
+  }, []);
+
+  const checkBiometrics = async () => {
+    // This function checks if the device supports biometrics
+    const hasHardware = await LocalAuthentication.hasHardwareAsync();
+    const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+    setHasBiometrics(hasHardware && isEnrolled);
+  };
+
+  const authenticate = async () => {
+    try {
+      // Start the authentication process
+      setIsAuthenticating(true);
+      setError(null);
+
+      // Check for hardware support and enrollment
+      const hasHardware = await LocalAuthentication.hasHardwareAsync();
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+      const supportedTypes =
+        await LocalAuthentication.supportedAuthenticationTypesAsync();
+
+      // Determine which biometric types are supported
+      const supportsFingerprint = supportedTypes.includes(
+        LocalAuthentication.AuthenticationType.FINGERPRINT
+      );
+      const supportsFace = supportedTypes.includes(
+        LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION
+      );
+
+      // ** Add custom pin when no biometrics or system pin are available
+      if (!hasHardware || !isEnrolled || supportedTypes.length === 0) {
+        router.push("/custom-pin");
+        return;
+      }
+
+      // Choose the appropriate prompt message for the dialog
+      let promptMessage = "Authenticate";
+      if (supportsFace) {
+        promptMessage = "Use Face ID";
+      } else if (supportsFingerprint) {
+        promptMessage = "Use Fingerprint";
+      } else if (!hasHardware || !isEnrolled) {
+        promptMessage = "Enter your PIN";
+      }
+
+      // Ask the user to authenticate using available biometric methods or fallback
+      const auth = await LocalAuthentication.authenticateAsync({
+        promptMessage,
+        fallbackLabel: "Enter PIN",
+        cancelLabel: "Cancel",
+        disableDeviceFallback: false,
+      });
+
+      if (auth.success) {
+        router.replace("/"); // change when home screen is created
+      } else {
+        setError("Authentication failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Authentication error:", error);
+      setError("Authentication failed. Please try again.");
+    } finally {
+      setIsAuthenticating(false);
+    }
+  };
 
   return (
     <LinearGradient colors={["#4CAF50", "#81C784"]} style={styles.container}>
@@ -31,13 +101,13 @@ export default function AuthScreen() {
           <Text style={styles.welcomeText}>Welcome Back!</Text>
           <Text style={styles.instructionText}>
             {hasBiometrics
-              ? "Use face ID/TouchID or PIN to access your medications"
-              : "Enter your PIN to access your medications"}
+              ? "Use face ID/TouchID or PIN to access your medication"
+              : "Enter your PIN to access your medication"}
           </Text>
 
           <TouchableOpacity
             style={[styles.button, isAuthenticating && styles.buttonDisabled]}
-            /* onPress={authenticate} */
+            onPress={authenticate}
             disabled={isAuthenticating}
             activeOpacity={0.6}
           >
@@ -62,7 +132,7 @@ export default function AuthScreen() {
               <Text style={styles.errorText}>{error}</Text>
             </View>
           )}
-        </View> 
+        </View>
       </View>
     </LinearGradient>
   );
