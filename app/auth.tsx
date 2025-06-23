@@ -50,7 +50,7 @@ export default function AuthScreen() {
         LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION
       );
 
-      // ** Add custom pin when no biometrics or system pin are available
+      // Add custom pin when no biometrics or system pin are available
       if (!hasHardware || !isEnrolled || supportedTypes.length === 0) {
         router.push("/custom-pin");
         return;

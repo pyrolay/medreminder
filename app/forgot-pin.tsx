@@ -2,58 +2,39 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Dimensions,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Alert,
+    Dimensions,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 const { width } = Dimensions.get("window");
-const PIN_KEY = "userPin";
-const EMAIL_KEY = "userEmail";
+const VERIFICATION_CODE = "123456"; // MOCKED CODE FOR DEMO PURPOSES
 
-export default function CustomPinScreen() {
-  const [email, setEmail] = useState("");
-  const [pin, setPin] = useState("");
-  const [storedPin, setStoredPin] = useState<string>();
-  const [error, setError] = useState<string | null>(null);
-
-  const isCreating = !storedPin;
+export default function ForgotPin() {
+  const [email, setEmail] = useState<string | null>(null);
+  const [code, setCode] = useState("");
 
   useEffect(() => {
-    (async () => {
-      const savedPin = await SecureStore.getItemAsync(PIN_KEY);
-      setStoredPin(savedPin ?? undefined);
-    })();
+    SecureStore.getItemAsync("userEmail").then(setEmail);
   }, []);
 
-  const handleSave = async () => {
-    if (!email || pin.length !== 4)
-      return setError("Enter valid email and 4-digit PIN");
-    await SecureStore.setItemAsync(PIN_KEY, pin);
-    await SecureStore.setItemAsync(EMAIL_KEY, email);
-    router.replace("/custom-pin");
-  };
-
-  const handleUnlock = () => {
-    if (pin === storedPin) return router.replace("/");
-    setError("Incorrect PIN");
-    setPin("");
-  };
-
-  const handleSubmit = () => {
-    setError(null);
-    if (isCreating) {
-      handleSave();
+  const handleVerify = async () => {
+    if (code === VERIFICATION_CODE) {
+      await SecureStore.deleteItemAsync("userPin");
+      await SecureStore.deleteItemAsync("userEmail");
+      Alert.alert("PIN reset", "Your PIN has been deleted.");
+      router.replace("/");
     } else {
-      handleUnlock();
+      Alert.alert("Invalid Code", "Please try again.");
     }
   };
 
@@ -69,51 +50,32 @@ export default function CustomPinScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.iconContainer}>
-            <Ionicons name="lock-closed-outline" size={80} color="white" />
+            <Ionicons name="mail-unread-outline" size={80} color="white" />
           </View>
 
           <Text style={styles.title}>MedRemind</Text>
           <Text style={styles.subtitle}>
-            {isCreating ? "Set up your access" : "Enter your PIN"}
+            Verify your email to reset your PIN
           </Text>
 
           <View style={styles.card}>
-            {isCreating && (
-              <TextInput
-                style={styles.input}
-                placeholder="Enter your email"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                placeholderTextColor="#aaa"
-              />
-            )}
+            <Text style={styles.info}>
+              A code has been sent to your email {email ? `(${email})` : "..."}
+            </Text>
 
             <TextInput
               style={[styles.input, styles.pinInput]}
-              placeholder="- - - -"
-              value={pin}
-              onChangeText={setPin}
+              placeholder="1 2 3 4 5 6"
+              value={code}
+              onChangeText={setCode}
               keyboardType="numeric"
-              maxLength={4}
-              secureTextEntry
+              maxLength={6}
               placeholderTextColor="#aaa"
             />
 
-            {error && <Text style={styles.errorText}>{error}</Text>}
-
-            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-              <Text style={styles.buttonText}>
-                {isCreating ? "Save PIN" : "Unlock"}
-              </Text>
+            <TouchableOpacity style={styles.button} onPress={handleVerify}>
+              <Text style={styles.buttonText}>Verify & Reset</Text>
             </TouchableOpacity>
-
-            {!isCreating && (
-              <TouchableOpacity onPress={() => router.push("/forgot-pin")}>
-                <Text style={styles.link}>Forgot my PIN</Text>
-              </TouchableOpacity>
-            )}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -165,6 +127,12 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  info: {
+    fontSize: 16,
+    color: "#444",
+    marginBottom: 30,
+    textAlign: "center",
+  },
   input: {
     width: "100%",
     fontSize: 16,
@@ -186,21 +154,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#4CAF50",
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "row",
   },
   buttonText: {
     color: "white",
     fontSize: 16,
-    fontWeight: "600",
-  },
-  errorText: {
-    color: "#F44336",
-    fontSize: 14,
-    marginBottom: 10,
-  },
-  link: {
-    color: "#1976D2",
-    marginTop: 20,
     fontWeight: "600",
   },
 });
