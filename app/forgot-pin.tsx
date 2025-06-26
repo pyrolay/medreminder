@@ -4,7 +4,6 @@ import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
 import {
-  Alert,
   Dimensions,
   KeyboardAvoidingView,
   Platform,
@@ -13,7 +12,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 const { width } = Dimensions.get("window");
@@ -32,9 +31,8 @@ export default function ForgotPin() {
       await SecureStore.deleteItemAsync("userPin");
       await SecureStore.deleteItemAsync("userEmail");
       router.replace("/");
-    } else {
-      Alert.alert("Invalid Code", "Please try again.");
     }
+    // Add error handling for incorrect code
   };
 
   return (
@@ -42,7 +40,7 @@ export default function ForgotPin() {
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={60}
+        keyboardVerticalOffset={20}
       >
         <ScrollView
           contentContainerStyle={styles.content}

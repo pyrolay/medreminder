@@ -75,7 +75,7 @@ export default function AuthScreen() {
       });
 
       if (auth.success) {
-        router.replace("/"); // change when home screen is created
+        router.replace("/home");
       } else {
         setError("Authentication failed. Please try again.");
       }

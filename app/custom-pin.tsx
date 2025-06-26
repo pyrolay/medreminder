@@ -43,7 +43,7 @@ export default function CustomPinScreen() {
   };
 
   const handleUnlock = () => {
-    if (pin === storedPin) return router.replace("/");
+    if (pin === storedPin) return router.replace("/home");
     setError("Incorrect PIN");
     setPin("");
   };
@@ -59,14 +59,14 @@ export default function CustomPinScreen() {
 
   return (
     <LinearGradient colors={["#4CAF50", "#81C784"]} style={styles.container}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={60}
+      <ScrollView
+        contentContainerStyle={[{flexGrow: 1}]}
+        keyboardShouldPersistTaps="handled"
       >
-        <ScrollView
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
+        <KeyboardAvoidingView
+          style={[styles.content, { flex: 1 }]}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
         >
           <View style={styles.iconContainer}>
             <Ionicons name="lock-closed-outline" size={80} color="white" />
@@ -76,7 +76,6 @@ export default function CustomPinScreen() {
           <Text style={styles.subtitle}>
             {isCreating ? "Set up your access" : "Enter your PIN"}
           </Text>
-
           <View style={styles.card}>
             {isCreating && (
               <TextInput
@@ -115,8 +114,8 @@ export default function CustomPinScreen() {
               </TouchableOpacity>
             )}
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </ScrollView>
     </LinearGradient>
   );
 }
@@ -124,7 +123,6 @@ export default function CustomPinScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: {
-    flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
