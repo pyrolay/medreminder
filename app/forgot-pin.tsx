@@ -12,7 +12,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 
 const { width } = Dimensions.get("window");
@@ -39,8 +39,8 @@ export default function ForgotPin() {
     <LinearGradient colors={["#4CAF50", "#81C784"]} style={styles.container}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={20}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 0}
       >
         <ScrollView
           contentContainerStyle={styles.content}

@@ -59,14 +59,14 @@ export default function CustomPinScreen() {
 
   return (
     <LinearGradient colors={["#4CAF50", "#81C784"]} style={styles.container}>
-      <ScrollView
-        contentContainerStyle={[{flexGrow: 1}]}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
       >
-        <KeyboardAvoidingView
-          style={[styles.content, { flex: 1 }]}
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
         >
           <View style={styles.iconContainer}>
             <Ionicons name="lock-closed-outline" size={80} color="white" />
@@ -114,8 +114,8 @@ export default function CustomPinScreen() {
               </TouchableOpacity>
             )}
           </View>
-        </KeyboardAvoidingView>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 }
@@ -123,6 +123,7 @@ export default function CustomPinScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: {
+    flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
