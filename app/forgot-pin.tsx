@@ -4,16 +4,16 @@ import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
 import {
-    Alert,
-    Dimensions,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 const { width } = Dimensions.get("window");
@@ -31,7 +31,6 @@ export default function ForgotPin() {
     if (code === VERIFICATION_CODE) {
       await SecureStore.deleteItemAsync("userPin");
       await SecureStore.deleteItemAsync("userEmail");
-      Alert.alert("PIN reset", "Your PIN has been deleted.");
       router.replace("/");
     } else {
       Alert.alert("Invalid Code", "Please try again.");
