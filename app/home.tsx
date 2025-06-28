@@ -1,5 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
+import { Link } from "expo-router";
 import { useEffect, useRef } from "react";
 import {
   Animated,
@@ -15,6 +16,37 @@ import Svg, { Circle } from "react-native-svg";
 const { width } = Dimensions.get("window");
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+
+const QUICK_ACTIONS = [
+  {
+    icon: "add-circle-outline" as const,
+    label: "Add \nMedication",
+    route: "/medications/add" as const,
+    color: "#2E7D32",
+    gradient: ["#4CAF50", "#2E7D32"] as [string, string],
+  },
+  {
+    icon: "calendar-outline" as const,
+    label: "Calendar\nView",
+    route: "/calendar" as const,
+    color: "#1976D2",
+    gradient: ["#2196F3", "#1976D2"] as [string, string],
+  },
+  {
+    icon: "time-outline" as const,
+    label: "History\nLog",
+    route: "/history" as const,
+    color: "#C2185B",
+    gradient: ["#E91E63", "#C2185B"] as [string, string],
+  },
+  {
+    icon: "medical-outline" as const,
+    label: "Refill\nTracker",
+    route: "/refills" as const,
+    color: "#E64A19",
+    gradient: ["#FF5722", "#E64A19"] as [string, string],
+  },
+];
 
 interface CircularProgressProps {
   progress: number;
@@ -105,9 +137,33 @@ export default function HomeScreen() {
         </View>
       </LinearGradient>
       <View style={styles.content}>
-        <View>
-          <Text>Quick Actions</Text>
-          <View></View>
+        <View style={styles.quickActionsContainer}>
+          <Text style={styles.quickActionsTitle}>Quick Actions</Text>
+          <View style={styles.quickActionsGrid}>
+            {QUICK_ACTIONS.map((action) => (
+              <Link href={"/"} key={action.label} asChild>
+                <TouchableOpacity style={styles.quickActionsButton}>
+                  <LinearGradient
+                    colors={action.gradient}
+                    style={styles.quickActionsGradient}
+                  >
+                    <View style={styles.quickActionsContainer}>
+                      <View style={styles.quickActionsIcon}>
+                        <Ionicons
+                          name={action.icon}
+                          size={24}
+                          color={"white"}
+                        />
+                      </View>
+                      <Text style={styles.quickActionsLabel}>
+                        {action.label}
+                      </Text>
+                    </View>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </Link>
+            ))}
+          </View>
         </View>
       </View>
     </ScrollView>
@@ -204,5 +260,50 @@ const styles = StyleSheet.create({
   },
   progressRing: {
     transform: [{ rotate: "-90deg" }],
+  },
+  quickActionsContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 25,
+  },
+  quickActionsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+    marginTop: 15,
+  },
+  quickActionsButton: {
+    width: (width - 52) / 2,
+    height: 120,
+    borderRadius: 16,
+    overflow: "hidden",
+  },
+  quickActionsGradient: {
+    flex: 1,
+    padding: 15,
+    paddingLeft: 0,
+  },
+  quickActionsContent: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+  quickActionsIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  quickActionsLabel: {
+    fontSize: 16,
+    color: "white",
+    fontWeight: "600",
+    marginTop: 8,
+  },
+  quickActionsTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#1A1A1A",
+    marginBottom: 5,
   },
 });
