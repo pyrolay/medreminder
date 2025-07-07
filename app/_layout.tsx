@@ -14,6 +14,14 @@ export default function RootLayout() {
         <Stack.Screen name="index" />
         <Stack.Screen name="auth" />
         <Stack.Screen name="custom-pin" />
+        <Stack.Screen
+          name="medication/add"
+          options={{
+            headerShown: false,
+            headerBackTitle: "",
+            title: "",
+          }}
+        />
       </Stack>
       <StatusBar style="auto" />
     </>
