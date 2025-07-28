@@ -11,12 +11,12 @@ export interface Medication {
   startDate: string;
   duration: string;
   color: string;
-  reminderEnable: boolean;
+  reminderEnabled: boolean;
   currentSupply: number;
   totalSupply: number;
   refillAt: number;
-  refillReminder: boolean;
-  lastRefillDate: string;
+/*   refillReminder: boolean;
+  lastRefillDate: string; */
 }
 
 export interface DoseHistory {

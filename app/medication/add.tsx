@@ -1,3 +1,5 @@
+import { scheduleMedicationReminder } from "@/utils/notification";
+import { addMedication } from "@/utils/storage";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { LinearGradient } from "expo-linear-gradient";
@@ -200,7 +202,6 @@ export default function AddMedicationScreen() {
         color: randomColor,
       };
 
-      // ** Add later
       await addMedication(medicationData);
 
       // Schedule reminders if enabled
@@ -234,7 +235,6 @@ export default function AddMedicationScreen() {
 
   return (
     <View style={styles.container}>
-      {/*  */}
       <LinearGradient
         colors={["#1A8E2D", "#146922"]}
         start={{ x: 0, y: 0 }}
